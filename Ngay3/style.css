@@ -138,6 +138,15 @@ input[type="radio"] {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+#dropdown option {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+#dropdown option:hover {
+  color: #ffffff;
+  background: #7a5cfa;
+}
 
 .buttons {
   display: flex;
