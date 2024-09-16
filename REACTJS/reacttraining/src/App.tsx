@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
-import { ListPosts, Example, Login, PostDetail, Root } from './pages';
+import { ListPosts, Login, PostDetail, Root } from './pages';
 import { ListPostContext } from './context/ListPostContext';
 
 const router = createBrowserRouter([

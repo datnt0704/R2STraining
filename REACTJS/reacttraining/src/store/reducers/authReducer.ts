@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { LOGIN } from './../actions'
 
-const login = createAsyncThunk('login', ({ username, password }) => {
+const login = createAsyncThunk('login', () => {
 	// fetch /auth
-	const auth = {}
+	// const auth = {}
 	// compare
 	
+	return null
 	// Challenge 14:
 	/**
 	 * install json server

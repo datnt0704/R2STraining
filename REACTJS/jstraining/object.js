@@ -254,3 +254,5 @@ export function insertPopularItem(products, newProduct) {
   return updateProducts;
 }
 export default filterProductByColor;
+
+

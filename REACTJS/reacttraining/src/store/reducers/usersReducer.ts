@@ -3,6 +3,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { UserModel, UsersState, UserData } from './../../types/user';
 import { fetchData } from '../../utils/fetchData';
+import { EDIT_POST } from './../actions';
 
 export const fetchListUsers = createAsyncThunk(
   'users/fetchListUsers',
@@ -47,6 +48,18 @@ const usersSlice = createSlice({
     builder.addCase(fetchListUsers.rejected, (state, action) => {
       state.loading = 'failed';
     });
+    builder.addCase(
+      EDIT_POST,
+      (
+        state,
+        action: any // TOFIX: double check addCase typescript
+      ) => {
+        state.data[action.userId] = {
+          ...state.data[action.userId],
+          name: action.changingInput.author,
+        };
+      }
+    );
   },
 });
 

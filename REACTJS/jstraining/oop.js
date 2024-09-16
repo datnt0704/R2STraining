@@ -148,19 +148,21 @@ function SortedArray() {
   this.numbers = [];
 }
 
-SortedArray.prototype.initNumbers = function (arr) {}; // set arr to this.numbers
-SortedArray.prototype.get = function (num) {}; // return index of num
-SortedArray.prototype.set = function (num) {}; // correct order in arr
-SortedArray.prototype.remove = function (num) {}; // remove num in arr
+SortedArray.prototype.initNumbers = function (arr) { }; // set arr to this.numbers
+SortedArray.prototype.get = function (num) { }; // return index of num
+SortedArray.prototype.set = function (num) { }; // correct order in arr
+SortedArray.prototype.remove = function (num) { }; // remove num in arr
 
 // challenge 7
 /**
-	function SortedArray() {
-		this.numbers = [];
-	}
-	SortedArray.prototype.initNumbers = function (arr) {}; // set arr to this.numbers
-	SortedArray.prototype.get = function (num) {}; // return index of num
-	SortedArray.prototype.set = function (num) {} // correct order in arr
-	SortedArray.prototype.remove = function(num){} // remove num in arr
+  function SortedArray() {
+    this.numbers = [];
+  }
+  SortedArray.prototype.initNumbers = function (arr) {}; // set arr to this.numbers
+  SortedArray.prototype.get = function (num) {}; // return index of num
+  SortedArray.prototype.set = function (num) {} // correct order in arr
+  SortedArray.prototype.remove = function(num){} // remove num in arr
  *
  */
+
+

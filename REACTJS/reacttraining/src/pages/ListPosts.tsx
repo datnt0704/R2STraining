@@ -33,6 +33,7 @@ function ListPosts() {
   // const { data: postsData, setData: setPostsData } = useApi('/posts', []);
   const [count, setCount] = useState(0); // asynchronous  (batch update)
   const [time, setTime] = useState(0);
+
   const totalTitleLength = useRef<number>(0); // ref
   const dispatch = useDispatch<AppDispatch>();
   const { auth, posts, users } = useSelector((state: any) => state);
@@ -67,7 +68,6 @@ function ListPosts() {
   }, [count, time, setCount, setTime]);
 
   console.log('re-render LIst post count ', count);
-
   if (!auth.isLoggedIn) {
     return <Navigate to='/login' replace={true} />;
   }
@@ -90,7 +90,7 @@ function ListPosts() {
         return postWithUser ? (
           <Post
             key={postWithUser.id} // 1, 2, 3 1,
-            postDetail={{ post: postWithUser, count: postsData.length }}
+            post={postWithUser}
             // title={post.title}
             // body={post.body}
             // id={post.id}
@@ -103,3 +103,4 @@ function ListPosts() {
 }
 
 export default ListPosts;
+
