@@ -111,3 +111,4 @@ export default memo(Post, arePropsEqual); // shallow compare
  * 1. Complete the editing function
  * 2. Handle Deleting function
  */
+
