@@ -13,6 +13,7 @@ function ListPosts() {
   const { isLoggedIn, postIds, postsData, userData, isLoading } =
     useFetchPosts();
 
+  // Use the custom hook for searching posts
   const { searchResults, debounceSearch } = useSearchPost(postIds, postsData);
 
   if (!isLoggedIn) {
@@ -25,7 +26,7 @@ function ListPosts() {
 
   return (
     <>
-      <Input label="Search" onChange={(e) => debounceSearch(e.target.value)} />
+      <Input label="Search" onChange={debounceSearch} />
       <Suspense fallback={<p>Loading list ...</p>}>
         {searchResults.map((id: PostModel["id"]) => {
           const post = postsData[id];
