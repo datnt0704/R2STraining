@@ -3,9 +3,10 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
 import Root from "./pages/Root";
-import ProductList from "./pages/ProductList";
+import Products from "./pages/Products";
 import Categories from "./pages/Categories";
 import Colors from "./pages/Colors";
+import Drawer from "./components/Drawer";
 
 const router = createBrowserRouter([
   {
@@ -14,11 +15,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Root />,
+    element: <Drawer />,
     children: [
       {
-        path: "/product",
-        element: <ProductList />,
+        path: "/products",
+        element: <Products />,
       },
       {
         path: "/categories",

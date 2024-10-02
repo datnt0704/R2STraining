@@ -5,7 +5,7 @@ import { LOGOUT } from "../actions";
 const BASE_URL = "http://localhost:5000";
 
 export const login = createAsyncThunk(
-  "auth/login",
+  "login",
   async (userInfor: { username: string; password: string }) => {
     const authInfor = await fetchJson(BASE_URL + "/auth");
     console.log("authInfor", authInfor);

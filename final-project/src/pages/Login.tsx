@@ -6,7 +6,7 @@ import { validateLoginForm } from "./../utils/validation";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-import { boxStyle } from "./style";
+import { boxStyle } from "./styles";
 import { login as handleLogin } from "../store/reducers/authReducer";
 import { AppDispatch } from "../store";
 
