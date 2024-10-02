@@ -5,7 +5,7 @@ export async function fetchJson(url: string) {
       });
   
       if (!res.ok) {
-        throw new Error(`Error: ${res.status} ${res.statusText}`);
+        throw new Error(`Error: ${res.ok} ${res.statusText}`);
       }
   
       const jsonData = await res.json();
@@ -23,12 +23,12 @@ export async function fetchJson(url: string) {
   ) {
     try {
       const res = await fetch(url, {
-        method,
+        method: method || 'POST',
         body: JSON.stringify(body),
       });
   
       if (!res.ok) {
-        throw new Error(`Error: ${res.status} ${res.statusText}`);
+        throw new Error(`Error: ${res.ok} ${res.statusText}`);
       }
   
       const data = await res.json();
@@ -46,7 +46,7 @@ export async function fetchJson(url: string) {
       });
   
       if (!res.ok) {
-        throw new Error(`Error: ${res.status} ${res.statusText}`);
+        throw new Error(`Error: ${res.ok} ${res.statusText}`);
       }
   
       console.log("Resource deleted successfully");
