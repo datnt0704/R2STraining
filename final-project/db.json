@@ -1,10 +1,11 @@
 {
   "auth": [
     {
-    "email": "admin@gmail.com",
-    "password": "12345678"
-  }
-],
+      "email": "admin@gmail.com",
+      "password": "12345678",
+      "id": "8cff"
+    }
+  ],
   "categories": [
     {
       "id": "1",
@@ -43,32 +44,20 @@
     {
       "id": "6",
       "name": "silver"
+    },
+    {
+      "id": "7",
+      "name": "violet"
     }
   ],
   "products": [
-    {
-      "id": "1",
-      "name": "T-shirt long sleeve",
-      "available": 23,
-      "sold": 10,
-      "categoryId": 1,
-      "colorIds": [
-        1,
-        4
-      ],
-      "price": 300000
-    },
     {
       "id": "2",
       "name": "Trouser with tie PATCH",
       "available": 5,
       "sold": 3,
       "categoryId": 1,
-      "colors": [
-        1,
-        4,
-        5
-      ],
+      "colorIds": [],
       "price": 450000
     },
     {
