@@ -3,31 +3,39 @@
     {
       "email": "admin@gmail.com",
       "password": "12345678",
-      "id": "8cff"
+      "id": "fe24"
     }
   ],
   "categories": [
     {
-      "id": "1",
-      "name": "cloth"
+      "name": "Cloth",
+      "id": "1"
     },
     {
-      "id": "2",
-      "name": "Bag"
+      "name": "Bag",
+      "id": "2"
     },
     {
       "id": "3",
       "name": "Accessory"
+    },
+    {
+      "id": "1728880933060",
+      "name": "Jewelry"
+    },
+    {
+      "id": "1728880945436",
+      "name": "Electronics"
+    },
+    {
+      "id": "1728880967845",
+      "name": "Home Decor"
     }
   ],
   "colors": [
     {
       "id": "1",
       "name": "white"
-    },
-    {
-      "id": "2",
-      "name": "yellow"
     },
     {
       "id": "3",
@@ -38,16 +46,28 @@
       "name": "pink"
     },
     {
-      "id": "5",
+      "id": "1728881002997",
       "name": "blue"
     },
     {
-      "id": "6",
+      "id": "1728881010988",
       "name": "silver"
     },
     {
-      "id": "7",
-      "name": "violet"
+      "id": "1728881016588",
+      "name": "red"
+    },
+    {
+      "id": "1728881020364",
+      "name": "green"
+    },
+    {
+      "id": "1728881027004",
+      "name": "purple"
+    },
+    {
+      "id": "1728881032324",
+      "name": "orange"
     }
   ],
   "products": [
@@ -57,43 +77,142 @@
       "available": 5,
       "sold": 3,
       "categoryId": 1,
-      "colorIds": [],
-      "price": 450000
+      "colorIds": [
+        3,
+        1,
+        4
+      ],
+      "price": "150000"
     },
     {
       "id": "3",
       "name": "Backpack Elsa",
-      "available": 100,
+      "available": "2",
       "sold": 7,
       "categoryId": 2,
-      "colors": [
-        4,
-        6
+      "colorIds": [
+        3
       ],
       "price": 370000
     },
     {
-      "id": "4",
-      "name": "Silver necklace",
-      "available": 30,
-      "sold": 1,
-      "categoryId": 3,
-      "colors": [
-        8
+      "id": "1728881680865",
+      "name": "T-shirt long sleeve",
+      "available": "10",
+      "sold": "20",
+      "categoryId": 1,
+      "colorIds": [
+        1,
+        4
       ],
-      "price": 1450000
+      "price": "300000"
     },
     {
-      "id": "5",
-      "name": "Hand Bag with metal strap",
-      "available": 5,
-      "sold": 1,
+      "id": "1728881793114",
+      "name": "Hand Bag with metal strap          gffdvvvvvvvvv",
+      "available": "5",
+      "sold": "1",
       "categoryId": 2,
-      "colors": [
+      "colorIds": [
+        1728881016588,
+        1728881032324,
+        1728881027004,
         3,
+        4,
+        1728881002997
+      ],
+      "price": "260000"
+    },
+    {
+      "id": "1728882126226",
+      "name": "Gold ring",
+      "available": "12",
+      "sold": "5",
+      "categoryId": 1728880933060,
+      "colorIds": [
         2
       ],
-      "price": 260000
+      "price": "3000000"
+    },
+    {
+      "id": "1728882189073",
+      "name": "Wireless Headphones",
+      "available": "20",
+      "sold": "8",
+      "categoryId": 1728880945436,
+      "colorIds": [
+        2,
+        3,
+        4,
+        1728881002997,
+        1728881010988,
+        1728881016588,
+        1728881020364
+      ],
+      "price": "320000"
+    },
+    {
+      "id": "1728882281513",
+      "name": "Sports Shoes",
+      "available": "3",
+      "sold": "15",
+      "categoryId": 1728880967845,
+      "colorIds": [
+        1,
+        3
+      ],
+      "price": "950000"
+    },
+    {
+      "id": "1728882392168",
+      "name": "Stylish Backpack with Anti-Theft Features for Travelers",
+      "available": "20",
+      "sold": "3",
+      "categoryId": 2,
+      "colorIds": [
+        1,
+        3,
+        1728881010988,
+        1728881002997
+      ],
+      "price": "750000"
+    },
+    {
+      "id": "1728882836408",
+      "name": "Leather Wallet",
+      "available": "10",
+      "sold": "10",
+      "categoryId": 2,
+      "colorIds": [
+        3
+      ],
+      "price": "150000"
+    },
+    {
+      "id": "1728883518029",
+      "name": "Organic Cotton T-shirt with Unique Artistic Design",
+      "available": "3",
+      "sold": "12",
+      "categoryId": 1,
+      "colorIds": [
+        1728881016588,
+        1728881020364,
+        1728881027004
+      ],
+      "price": "200000"
+    },
+    {
+      "id": "1728883592654",
+      "name": "Smart Watch",
+      "available": "1",
+      "sold": "10",
+      "categoryId": 1728880945436,
+      "colorIds": [
+        3,
+        1728881010988,
+        1728881002997
+      ],
+      "price": "3500000"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchColor,
@@ -6,18 +6,14 @@ import {
   deleteColor,
 } from "../store/reducers/colorReducer";
 import { AppDispatch } from "../store";
-import {
-  Button,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Button, Chip, Box } from "@mui/material";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import ColorDialog from "../components/ColorDialog";
-import AddIcon from "@mui/icons-material/Add";
+import NotificationSnackbar from "../components/NotificationSnackbar";
+import { colorChipStyle, colorContainerStyle, colorListStyle } from "./styles";
 
-const Colors = () => {
+const Colors: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     entities: colors = {},
@@ -25,9 +21,19 @@ const Colors = () => {
     status,
   } = useSelector((state: any) => state.color);
 
+  const { entities: products = [] } = useSelector(
+    (state: any) => state.product
+  );
+
   const [open, setOpen] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [colorToDelete, setColorToDelete] = useState<string | null>(null);
+  const [productCount, setProductCount] = useState(0);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     if (status === "idle") {
@@ -35,79 +41,123 @@ const Colors = () => {
     }
   }, [status, dispatch]);
 
-  const handleOpenDialog = () => setOpen(true);
-  const handleCloseDialog = () => setOpen(false);
+  const handleOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
+  const handleCloseConfirm = useCallback(() => setOpenConfirm(false), []);
 
-  const handleAddColor = (colorName: string) => {
-    const newId = (
-      colorIds.length > 0 ? Math.max(...colorIds) + 1 : 1
-    ).toString();
-    const newColor = {
-      id: newId,
-      name: colorName,
-    };
-    dispatch(addColor(newColor));
-    setOpen(false);
-  };
+  const handleAddColor = useCallback(
+    async (colorName: string) => {
+      try {
+        const newId = Date.now().toString();
+        const newColor = { id: newId, name: colorName };
 
-  const handleDeleteColor = (id: string) => {
-    setColorToDelete(id);
-    setOpenConfirm(true);
-  };
+        await dispatch(addColor(newColor)).unwrap();
 
-  const handleConfirmDelete = () => {
+        setSnackBarMessage("Color added successfully!");
+        setSnackBarSeverity("success");
+      } catch (error) {
+        console.error("Error adding color:", error);
+        setSnackBarMessage("Failed to add color.");
+        setSnackBarSeverity("error");
+      } finally {
+        setSnackBarOpen(true);
+        setOpen(false);
+      }
+    },
+    [dispatch]
+  );
+
+  const handleDeleteColor = useCallback(
+    (id: string) => {
+      const count = Object.values(products).filter((product: any) => {
+        return String(product.colorIds) === String(id);
+      }).length;
+
+      setProductCount(count);
+      setColorToDelete(id);
+      setOpenConfirm(true);
+    },
+    [products]
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
     if (colorToDelete !== null) {
-      dispatch(deleteColor(colorToDelete));
-      setColorToDelete(null);
-      setOpenConfirm(false);
+      try {
+        await dispatch(deleteColor(colorToDelete)).unwrap();
+        setSnackBarMessage("Color deleted successfully!");
+        setSnackBarSeverity("success");
+      } catch (error) {
+        setSnackBarMessage("Failed to delete color.");
+        setSnackBarSeverity("error");
+      } finally {
+        setSnackBarOpen(true);
+        setColorToDelete(null);
+        setOpenConfirm(false);
+      }
     }
-  };
+  }, [colorToDelete, dispatch]);
 
-  const handleCloseConfirm = () => setOpenConfirm(false);
+  const handleCloseSnackBar = useCallback(
+    (event?: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === "clickaway") return;
+      setSnackBarOpen(false);
+    },
+    []
+  );
+
+  const colorChips = useMemo(
+    () =>
+      colorIds.map((id: string) => (
+        <Chip
+          key={id}
+          label={colors[id].name}
+          onDelete={() => handleDeleteColor(id)}
+          sx={colorChipStyle}
+        />
+      )),
+    [colorIds, colors, handleDeleteColor]
+  );
 
   return (
-    <div style={{ width: "100vw" }}>
+    <div style={{ width: "100vw", padding: "20px" }}>
       <h1>Color List</h1>
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
-        {colorIds.map((id: string) => (
-          <Chip
-            key={id}
-            label={colors[id].name}
-            onDelete={() => handleDeleteColor(id)}
-            style={{ margin: "5px", backgroundColor: "#f0f0f0" }}
-          />
-        ))}
+
+      <Box sx={colorContainerStyle}>
+        <Box sx={colorListStyle}>{colorChips}</Box>
+
         <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={handleOpenDialog}
-          style={{ marginLeft: "10px" }}
+          variant="outlined"
+          color="success"
+          startIcon={<LibraryAddIcon />}
+          onClick={handleOpen}
+          sx={{ alignSelf: "flex-start", marginTop: "5px" }}
         >
-          Add Color
+          Add
         </Button>
-      </div>
+      </Box>
 
       <ColorDialog
         open={open}
-        onClose={handleCloseDialog}
+        onClose={handleClose}
         onAddColor={handleAddColor}
       />
 
-      <Dialog open={openConfirm} onClose={handleCloseConfirm}>
-        <DialogTitle>Delete Color</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this color?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirm}>Cancel</Button>
-          <Button color="error" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDeleteDialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        onConfirm={handleConfirmDelete}
+        title="Delete Color"
+        message={`This color is being used by ${productCount} product(s). Are you sure you want to delete it?`}
+      />
+
+      <NotificationSnackbar
+        open={snackBarOpen}
+        message={snackBarMessage}
+        severity={snackBarSeverity}
+        onClose={handleCloseSnackBar}
+      />
     </div>
   );
 };
 
-export default Colors;
+export default memo(Colors);

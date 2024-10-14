@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { deleteJson, fetchJson, updateJson } from "../api";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:3000";
 
 interface Color {
   id: string; 

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchJson } from "../api";
 import { LOGOUT } from "../actions";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:3000";
 
 export const login = createAsyncThunk(
   "login",
@@ -28,26 +28,25 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
     });
     builder.addCase(login.fulfilled, (state, action: any) => {
+      console.log("state", state);
+      console.log("action", action);
       const formUserInfor = action.meta.arg;
       const authInfor = action.payload;
-
+      console.log("formUserInfor", formUserInfor);
+      console.log("action.payload", authInfor);
       if (
-        formUserInfor.username === authInfor.username &&
-        formUserInfor.password === authInfor.password
+        formUserInfor.username === authInfor[0].email &&
+        formUserInfor.password === authInfor[0].password
       ) {
         state.isLoggedIn = true;
-        state.error = ""; 
       } else {
         state.isLoggedIn = false;
         state.error = "Username or password is not correct";
       }
     });
-
-    builder.addCase(login.rejected, (state) => {
+    builder.addCase(login.rejected, (state, action) => {
       state.isLoggedIn = false;
-      state.error = "Login failed";
     });
-
   },
 });
 

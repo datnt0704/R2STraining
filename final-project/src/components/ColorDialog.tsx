@@ -7,6 +7,7 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+import { validateName } from "./../utils/validation"; // Import hàm validate
 
 interface ColorDialogProps {
   open: boolean;
@@ -20,12 +21,31 @@ const ColorDialog: React.FC<ColorDialogProps> = ({
   onAddColor,
 }) => {
   const [newColor, setNewColor] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewColor(value);
+
+    // Nếu có lỗi trước đó và người dùng đang nhập, xóa lỗi
+    if (error) {
+      const validationError = validateName(value, "color");
+      if (!validationError) {
+        setError(null);
+      }
+    }
+  };
 
   const handleAddColor = () => {
-    if (newColor.trim()) {
-      onAddColor(newColor.trim());
-      setNewColor("");
+    const validationError = validateName(newColor, "color");
+    if (validationError) {
+      setError(validationError); // Hiển thị lỗi nếu có
+      return;
     }
+
+    onAddColor(newColor.trim());
+    setNewColor("");
+    setError(null); // Xóa lỗi nếu thành công
     onClose();
   };
 
@@ -41,7 +61,9 @@ const ColorDialog: React.FC<ColorDialogProps> = ({
           fullWidth
           variant="outlined"
           value={newColor}
-          onChange={(e) => setNewColor(e.target.value)}
+          onChange={handleInputChange}
+          error={!!error}
+          helperText={error}
           sx={{ marginTop: "10px", marginBottom: "10px" }}
         />
       </DialogContent>

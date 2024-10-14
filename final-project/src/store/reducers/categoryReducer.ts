@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { deleteJson, fetchJson, updateJson } from "../api";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:3000";
 
 interface Category {
-  id: string; 
+  id: string;
   name: string;
 }
 
@@ -26,7 +26,10 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
     const response = await fetchJson(BASE_URL + "/categories");
-    return response;
+    return response.map((category: any) => ({
+      ...category,
+      id: String(category.id),
+    }));
   }
 );
 
@@ -34,7 +37,7 @@ export const addCategory = createAsyncThunk(
   "categories/addCategory",
   async (newCategory: Category) => {
     const response = await updateJson(BASE_URL + "/categories", newCategory, "POST");
-    return response;
+    return { ...response, id: String(response.id) };
   }
 );
 
@@ -42,7 +45,7 @@ export const updateCategory = createAsyncThunk(
   "categories/updateCategory",
   async (category: Category) => {
     const response = await updateJson(`${BASE_URL}/categories/${category.id}`, category, "PUT");
-    return response;
+    return { ...response, id: String(response.id) };
   }
 );
 
@@ -71,10 +74,6 @@ const categorySlice = createSlice({
           state.entities[category.id] = category;
         });
       })
-      .addCase(fetchCategories.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action?.error.message || "Failed to fetch categories";
-      })
       .addCase(addCategory.fulfilled, (state, action) => {
         const addedCategory: Category = action.payload;
         state.entities[addedCategory.id] = addedCategory;
@@ -84,18 +83,10 @@ const categorySlice = createSlice({
         const updatedCategory: Category = action.payload;
         state.entities[updatedCategory.id] = updatedCategory;
       })
-      .addCase(updateCategory.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action?.error.message || "Failed to update category";
-      })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         const categoryId = action.payload;
         delete state.entities[categoryId];
         state.ids = state.ids.filter((id) => id !== categoryId);
-      })
-      .addCase(deleteCategory.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action?.error.message || "Failed to delete category";
       });
   },
 });

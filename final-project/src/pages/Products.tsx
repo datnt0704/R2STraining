@@ -1,53 +1,43 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { Button, Table, TableContainer } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../store/index";
-import { fetchProduct } from "../store/reducers/productReducer";
-import { fetchColor } from "../store/reducers/colorReducer";
-import { fetchCategories } from "../store/reducers/categoryReducer";
-import AddIcon from "@mui/icons-material/Add";
-import CreateIcon from "@mui/icons-material/Create";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ProductDialog from "../components/ProductDialog";
-import { styled } from "@mui/material/styles";
-import { TableHeading } from "./styles";
 import {
+  fetchProduct,
   addProduct,
   updateProduct,
   deleteProduct,
 } from "../store/reducers/productReducer";
-
-const DemoPaper = styled(Paper)(({ theme }) => ({
-  width: "auto",
-  height: "40px",
-  padding: "10px",
-  textAlign: "center",
-  backgroundColor: "#f6f6f6",
-  borderRadius: "5px",
-  fontWeight: "600",
-}));
+import { fetchColor } from "../store/reducers/colorReducer";
+import { fetchCategories } from "../store/reducers/categoryReducer";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
+import ProductDialog from "../components/Product/ProductDialog";
+import NotificationSnackbar from "../components/NotificationSnackbar";
+import {
+  summaryContainerStyle,
+  addButtonStyle,
+  summaryItemStyle,
+  summaryDetailsStyle,
+  TableHeading,
+} from "./styles";
+import PaginationControl from "../components/PaginationControl";
+import ProductListTable from "../components/Product/ProductListTable";
 
 const Products = () => {
   const dispatch = useDispatch<AppDispatch>();
+
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState<"success" | "error">(
+    "success"
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const {
     entities: products = {},
@@ -68,179 +58,211 @@ const Products = () => {
   }, [status, dispatch]);
 
   const totalProducts = useMemo(() => productIds.length, [productIds]);
+
   const totalAvailable = useMemo(
     () =>
       productIds.reduce(
-        (acc: any, id: any) => acc + (products[id]?.available || 0),
+        (acc: number, id: string) =>
+          acc + (Number(products[id]?.available) || 0),
         0
       ),
     [productIds, products]
   );
+
   const totalSold = useMemo(
     () =>
       productIds.reduce(
-        (acc: any, id: any) => acc + (products[id]?.sold || 0),
+        (acc: number, id: string) => acc + (Number(products[id]?.sold) || 0),
         0
       ),
     [productIds, products]
   );
+
   const revenue = useMemo(
     () =>
       productIds.reduce(
-        (acc: any, id: any) =>
-          acc + (products[id]?.price * products[id]?.sold || 0),
+        (acc: number, id: string) =>
+          acc +
+          Number(products[id]?.price || 0) * Number(products[id]?.sold || 0),
         0
       ),
     [productIds, products]
   );
 
-  const handleSubmit = (submittedProduct: any) => {
-    if (submittedProduct.id) {
-      dispatch(updateProduct(submittedProduct));
-    } else {
-      dispatch(addProduct(submittedProduct));
-    }
-    setOpen(false);
-  };
+  const formatter = useMemo(() => new Intl.NumberFormat("en-US"), []);
 
-  const handleAddProduct = () => {
+  const formatNumber = useCallback(
+    (value: number) => formatter.format(value),
+    [formatter]
+  );
+
+  const handleNotification = useCallback(
+    (message: string, severity: "success" | "error") => {
+      setSnackBarMessage(message);
+      setSnackBarSeverity(severity);
+      setSnackBarOpen(true);
+    },
+    []
+  );
+
+  const handleCloseSnackBar = useCallback(
+    (event?: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === "clickaway") return;
+      setSnackBarOpen(false);
+    },
+    []
+  );
+
+  const handleSubmit = useCallback(
+    async (submittedProduct: any) => {
+      try {
+        const action = submittedProduct.id ? updateProduct : addProduct;
+        const productData = {
+          ...submittedProduct,
+          id: submittedProduct.id,
+        };
+
+        const resultAction = await dispatch(action(productData));
+
+        if (action.fulfilled.match(resultAction)) {
+          handleNotification(
+            `Product ${
+              submittedProduct.id ? "updated" : "added"
+            } successfully!`,
+            "success"
+          );
+
+          setOpen(false);
+          setSelectedProduct(null);
+        } else {
+          handleNotification(
+            `Failed to ${submittedProduct.id ? "update" : "add"} product.`,
+            "error"
+          );
+        }
+      } catch (error) {
+        handleNotification(
+          `Failed to ${submittedProduct.id ? "update" : "add"} product.`,
+          "error"
+        );
+      } finally {
+        setOpen(false);
+        setSelectedProduct(null);
+      }
+    },
+    [dispatch, handleNotification]
+  );
+
+  const handleAddProduct = useCallback(() => {
     setSelectedProduct(null);
     setOpen(true);
-  };
+  }, []);
 
-  const handleEditProduct = (product: any) => {
+  const handleEditProduct = useCallback((product: any) => {
     setSelectedProduct(product);
     setOpen(true);
-  };
+  }, []);
 
-  const handleDeleteProduct = (id: number) => {
+  const handleDeleteProduct = useCallback((id: number) => {
     setProductToDelete(id);
     setOpenConfirm(true);
-  };
+  }, []);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = useCallback(() => {
     if (productToDelete !== null) {
       dispatch(deleteProduct(productToDelete))
         .unwrap()
-        .then(() => {
-          console.log(`Deleted product with ID: ${productToDelete}`);
-          setProductToDelete(null);
-          setOpenConfirm(false);
-        })
-        .catch((error) => {
-          console.error("Failed to delete product:", error);
-          setOpenConfirm(false);
-        });
+        .then(() =>
+          handleNotification("Product deleted successfully!", "success")
+        )
+        .catch(() => handleNotification("Failed to delete product.", "error"));
+      setProductToDelete(null);
+      setOpenConfirm(false);
     }
-  };
+  }, [dispatch, productToDelete, handleNotification]);
 
-  const handleCloseModal = () => setOpen(false);
+  const totalPages = Math.ceil(productIds.length / itemsPerPage);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return productIds.slice(start, end);
+  }, [productIds, currentPage, itemsPerPage]);
 
   return (
     <>
       <TableContainer>
-        <Box sx={{ marginBottom: "20px", display: "flex" }}>
-          <Stack direction="row" spacing={2}>
-            <DemoPaper variant="outlined">Total: {totalProducts}</DemoPaper>
-            <DemoPaper variant="outlined">
-              Available: {totalAvailable}
-            </DemoPaper>
-            <DemoPaper variant="outlined">Sold: {totalSold}</DemoPaper>
-            <DemoPaper variant="outlined">Revenue: {revenue}</DemoPaper>
-          </Stack>
-          <Box>
+        <h1>Seller</h1>
+        <div style={summaryContainerStyle}>
+          <div style={summaryDetailsStyle}>
+            <div style={summaryItemStyle}>
+              Total: {formatNumber(totalProducts)}
+            </div>
+            <div style={summaryItemStyle}>
+              Available: {formatNumber(totalAvailable)}
+            </div>
+            <div style={summaryItemStyle}>Sold: {formatNumber(totalSold)}</div>
+            <div style={summaryItemStyle}>Revenue: {formatNumber(revenue)}</div>
             <Button
               variant="outlined"
-              disableElevation
               color="success"
-              type="submit"
-              startIcon={<AddIcon />}
+              startIcon={<LibraryAddIcon />}
               onClick={handleAddProduct}
-              sx={{ height: 60, marginLeft: "10px" }}
+              sx={addButtonStyle}
             >
-              ADD
+              Add
             </Button>
-          </Box>
-        </Box>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell style={TableHeading}>No</TableCell>
-              <TableCell style={TableHeading}>Name</TableCell>
-              <TableCell style={TableHeading}>Available</TableCell>
-              <TableCell style={TableHeading}>Sold</TableCell>
-              <TableCell style={TableHeading}>Category</TableCell>
-              <TableCell style={TableHeading}>Colors</TableCell>
-              <TableCell style={TableHeading}>Price</TableCell>
-              <TableCell style={TableHeading}>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {productIds.map((id: string, index: number) => (
-              <TableRow
-                key={id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {index + 1}
-                </TableCell>
-                <TableCell align="center">{products[id].name}</TableCell>
-                <TableCell align="center">{products[id].available}</TableCell>
-                <TableCell align="center">{products[id].sold}</TableCell>
-                <TableCell align="center">
-                  {categories[products[id].categoryId]?.name || "Unknown"}
-                </TableCell>
-                <TableCell>
-                  {products[id].colorIds
-                    ?.map((colorId: any) => colors[colorId]?.name)
-                    .join(", ") || "No colors"}
-                </TableCell>
-                <TableCell>{products[id].price}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<CreateIcon />}
-                    onClick={() => handleEditProduct(products[id])}
-                    sx={{ marginRight: "10px", padding: "5px 10px" }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDeleteProduct(products[id].id)}
-                    sx={{ padding: "5px 10px" }}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </div>
+        </div>
 
-      {/* Dialogs */}
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>Delete Product</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this product?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
-          <Button color="error" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Table>
+          <ProductListTable
+            products={products}
+            productIds={paginatedProducts}
+            categories={categories}
+            colors={colors}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onEdit={handleEditProduct}
+            onDelete={handleDeleteProduct}
+            TableHeading={TableHeading}
+          />
+        </Table>
+
+        <PaginationControl
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </TableContainer>
 
       <ProductDialog
         open={open}
-        onClose={handleCloseModal}
+        onClose={() => {
+          setOpen(false);
+          setSelectedProduct(null);
+        }}
         onSubmit={handleSubmit}
         product={selectedProduct}
+      />
+
+      <ConfirmDeleteDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Product"
+        message="Are you sure you want to delete this product?"
+      />
+
+      <NotificationSnackbar
+        open={snackBarOpen}
+        message={snackBarMessage}
+        severity={snackBarSeverity}
+        onClose={handleCloseSnackBar}
       />
     </>
   );

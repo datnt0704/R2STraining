@@ -1,21 +1,6 @@
-import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import React, { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { Button, Table, TableContainer } from "@mui/material";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
-import CreateIcon from "@mui/icons-material/Create";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../store/index";
 import {
@@ -24,26 +9,40 @@ import {
   updateCategory,
   deleteCategory,
 } from "../store/reducers/categoryReducer";
-import CategoryDialog from "../components/CategoryDialog";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
+import CategoryDialog from "../components/Category/CategoryDialog";
+import NotificationSnackbar from "../components/NotificationSnackbar";
+import PaginationControl from "../components/PaginationControl";
+import { TableHeading, addButtonStyle } from "./styles";
+import CategoryListTable from "../components/Category/CategoryListTable";
 
-const Categories = () => {
+const Categories: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+
   const {
     entities: categories = {},
     ids: categoryIds = [],
     status,
   } = useSelector((state: any) => state.category);
 
-  const [open, setOpen] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const { entities: products = [] } = useSelector(
+    (state: any) => state.product
+  );
 
-  const handleOpen = () => {
-    setSelectedCategory(null);
-    setOpen(true);
-  };
-  const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [productCount, setProductCount] = useState(0); // Khai báo biến productCount
+
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
+  const [snackBarSeverity, setSnackBarSeverity] = useState<"success" | "error">(
+    "success"
+  );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     if (status === "idle") {
@@ -51,39 +50,111 @@ const Categories = () => {
     }
   }, [status, dispatch]);
 
-  const handleAddCategory = (category: any) => {
-    if (category.id) {
-      dispatch(updateCategory(category));
-    } else {
-      dispatch(addCategory(category));
-    }
-    setOpen(false);
-  };
+  const handleNotification = useCallback(
+    (message: string, severity: "success" | "error") => {
+      setSnackBarMessage(message);
+      setSnackBarSeverity(severity);
+      setSnackBarOpen(true);
+    },
+    []
+  );
 
-  const handleEditCategory = (category: any) => {
+  const handleAddOrUpdateCategory = useCallback(
+    async (category: any) => {
+      try {
+        const action = category.id ? updateCategory : addCategory;
+
+        const newId = Date.now().toString();
+        const categoryData = {
+          ...category,
+          id: category.id ? category.id : newId,
+        };
+
+        const resultAction = await dispatch(action(categoryData));
+
+        if (action.fulfilled.match(resultAction)) {
+          handleNotification(
+            `Category ${category.id ? "updated" : "added"} successfully!`,
+            "success"
+          );
+
+          setOpen(false);
+          setSelectedCategory(null);
+        } else {
+          handleNotification(
+            `Failed to ${category.id ? "update" : "add"} category.`,
+            "error"
+          );
+        }
+      } catch (error) {
+        handleNotification(
+          `Failed to ${category.id ? "update" : "add"} category.`,
+          "error"
+        );
+      }
+    },
+    [dispatch, handleNotification]
+  );
+
+  const handleAddButtonClick = useCallback(() => {
+    setSelectedCategory(null);
+    setOpen(true);
+  }, []);
+
+  const handleEditCategory = useCallback((category: any) => {
     setSelectedCategory(category);
     setOpen(true);
-  };
+  }, []);
 
-  const handleDeleteCategory = (id: string) => {
-    setCategoryToDelete(id);
-    setOpenConfirm(true);
-  };
+  const handleDeleteCategory = useCallback(
+    (id: string) => {
+      const count = Object.values(products).filter((product: any) => {
+        return String(product.categoryId) === String(id);
+      }).length;
 
-  const handleConfirmDelete = () => {
-    if (categoryToDelete) {
-      dispatch(deleteCategory(categoryToDelete));
+      setProductCount(count);
+      setCategoryToDelete(id);
+      setOpenConfirm(true);
+    },
+    [products]
+  );
+
+  const handleConfirmDelete = useCallback(() => {
+    if (categoryToDelete !== null) {
+      dispatch(deleteCategory(categoryToDelete))
+        .unwrap()
+        .then(() =>
+          handleNotification("Category deleted successfully!", "success")
+        )
+        .catch(() => handleNotification("Failed to delete category.", "error"));
       setCategoryToDelete(null);
       setOpenConfirm(false);
     }
-  };
+  }, [dispatch, categoryToDelete]);
+
+  const handleCloseSnackBar = useCallback(
+    (event?: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === "clickaway") return;
+      setSnackBarOpen(false);
+    },
+    []
+  );
+
+  const totalPages = Math.ceil(categoryIds.length / itemsPerPage);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const paginatedCategories = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return categoryIds.slice(start, start + itemsPerPage);
+  }, [categoryIds, currentPage, itemsPerPage]);
 
   return (
     <>
-      <TableContainer
-        component={Paper}
-        sx={{ marginTop: "20px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-      >
+      <TableContainer>
+        <h1>Categories List</h1>
         <div
           style={{
             display: "flex",
@@ -95,77 +166,55 @@ const Categories = () => {
             variant="outlined"
             color="success"
             startIcon={<LibraryAddIcon />}
-            onClick={handleOpen}
+            onClick={handleAddButtonClick}
+            sx={addButtonStyle}
           >
             Add
           </Button>
         </div>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>No</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {categoryIds.map((id: string, index: number) => (
-              <TableRow
-                key={id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {index + 1}
-                </TableCell>
-                <TableCell>{categories[id].name}</TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="outlined"
-                    disableElevation
-                    color="primary"
-                    startIcon={<CreateIcon />}
-                    sx={{ marginRight: "5px" }}
-                    onClick={() => handleEditCategory(categories[id])}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    disableElevation
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDeleteCategory(id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+        <Table sx={{ marginTop: "20px" }}>
+          <CategoryListTable
+            categories={categories}
+            categoryIds={paginatedCategories}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onEdit={handleEditCategory}
+            onDelete={handleDeleteCategory}
+            TableHeading={TableHeading}
+          />
         </Table>
+
+        <PaginationControl
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </TableContainer>
 
       <CategoryDialog
         open={open}
-        onClose={handleClose}
-        onAddCategory={handleAddCategory}
+        onClose={() => setOpen(false)}
+        onAddCategory={handleAddOrUpdateCategory}
         category={selectedCategory}
+        dialogTitle={selectedCategory ? "Edit Category" : "Add Category"}
       />
 
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>Delete Category</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this category?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
-          <Button color="error" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDeleteDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Category"
+        message={`This category is being used by ${productCount} product(s). Are you sure you want to delete it?`}
+      />
+
+      <NotificationSnackbar
+        open={snackBarOpen}
+        message={snackBarMessage}
+        severity={snackBarSeverity}
+        onClose={handleCloseSnackBar}
+      />
     </>
   );
 };
 
-export default Categories;
+export default memo(Categories);

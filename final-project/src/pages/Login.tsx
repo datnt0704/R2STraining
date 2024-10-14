@@ -14,7 +14,6 @@ const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const auth = useSelector((state: any) => state.auth);
-  // console.log('auth ', auth);
   const [errorMsgs, setErrorMsg] = useState({
     username: "",
     password: "",
@@ -29,17 +28,17 @@ const Login = () => {
       event.preventDefault();
 
       if (inputRefs.current.username && inputRefs.current.password) {
-        const username = inputRefs.current.username.value; // Đổi từ username thành username
+        const username = inputRefs.current.username.value;
         const password = inputRefs.current.password.value;
 
-        const errorMsgs = validateLoginForm(username, password); // Đổi từ username thành username
+        const errorMsgs = validateLoginForm(username, password);
         setErrorMsg({
           username: errorMsgs.username || "",
           password: errorMsgs.password || "",
         });
 
         if (!errorMsgs.username && !errorMsgs.password) {
-          dispatch(handleLogin({ username, password })); // Truyền vào username thay vì username
+          dispatch(handleLogin({ username, password }));
         }
       }
     },
