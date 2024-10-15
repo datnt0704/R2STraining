@@ -56,7 +56,7 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({
       return;
     }
 
-    onAddCategory({ ...newCategory, id: category?.id || undefined });
+    onAddCategory({ ...newCategory, ...(category ? { id: category.id } : {}) });
     onClose();
   }, [newCategory, category, onAddCategory, onClose]);
 

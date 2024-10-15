@@ -26,7 +26,7 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
   TableHeading,
 }) => {
   const getCategoryNameById = useCallback(
-    (id: string) => categories[id]?.name || "Unknown",
+    (id: string) => categories[id]?.name,
     [categories]
   );
 

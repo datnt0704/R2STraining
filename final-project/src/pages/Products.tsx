@@ -57,8 +57,6 @@ const Products = () => {
     }
   }, [status, dispatch]);
 
-  const totalProducts = useMemo(() => productIds.length, [productIds]);
-
   const totalAvailable = useMemo(
     () =>
       productIds.reduce(
@@ -76,6 +74,11 @@ const Products = () => {
         0
       ),
     [productIds, products]
+  );
+
+  const totalProducts = useMemo(
+    () => totalAvailable + totalSold,
+    [totalAvailable, totalSold]
   );
 
   const revenue = useMemo(
@@ -242,10 +245,7 @@ const Products = () => {
 
       <ProductDialog
         open={open}
-        onClose={() => {
-          setOpen(false);
-          setSelectedProduct(null);
-        }}
+        onClose={() => setOpen(false)}
         onSubmit={handleSubmit}
         product={selectedProduct}
       />

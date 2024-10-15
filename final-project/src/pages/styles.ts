@@ -51,16 +51,16 @@ export const TableHeading = {
 
 export const paginationContainerStyle = {
   display: "flex",
-  justifyContent: "flex-end",  // Căn về bên phải
+  justifyContent: "flex-end",  
   marginTop: "16px",
-  paddingRight: "16px",  // Khoảng cách với lề bên phải của bảng
+  paddingRight: "16px",  
 };
 
 export const paginationButtonStyle = {
   "& .MuiPaginationItem-root": {
-    width: "40px",  // Chiều rộng nút
-    height: "40px", // Chiều cao để tạo hình tròn
-    borderRadius: "50%",  // Tạo nút hình tròn
+    width: "40px",  
+    height: "40px", 
+    borderRadius: "50%",  
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -71,22 +71,22 @@ export const paginationButtonStyle = {
 
 export const paginationButtonHoverStyle = {
   "& .MuiPaginationItem-root:hover": {
-    backgroundColor: "#f0f0f0",  // Màu nền khi hover
+    backgroundColor: "#f0f0f0",  
   },
 };
 
 export const paginationButtonDisabledStyle = {
   "& .MuiPaginationItem-root.Mui-disabled": {
     opacity: 0.5,
-    cursor: "not-allowed",  // Con trỏ không cho phép click
+    cursor: "not-allowed", 
   },
 };
 
 
 export const productTitleCellStyle = {
-  whiteSpace: 'normal',  // Cho phép xuống dòng
-  wordWrap: 'break-word', // Ngắt từ nếu quá dài
-  maxWidth: '200px',      // Điều chỉnh kích thước tối đa nếu cần
+  whiteSpace: 'normal', 
+  wordWrap: 'break-word', 
+  maxWidth: '200px',      
 };
 
 export const tableDataCellStyle = {
@@ -104,7 +104,7 @@ export const colorChipStyle: CSSProperties = {
 
 export const colorContainerStyle: CSSProperties = {
   display: "flex",
-  alignItems: "flex-start", // Căn Button theo dòng đầu tiên
+  alignItems: "flex-start", 
   gap: "16px",
   
 };
@@ -112,8 +112,8 @@ export const colorContainerStyle: CSSProperties = {
 export const colorListStyle: CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
-  width: "70%", // Chiếm 70% chiều ngang
+  width: "70%",
   gap: "8px",
   maxHeight: "300px",
-  overflowY: "auto", // Đảm bảo cuộn nếu vượt quá chiều cao
+  overflowY: "auto", 
 };

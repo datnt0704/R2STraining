@@ -63,6 +63,11 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Xóa lỗi khi người dùng bắt đầu nhập
+    if (errors[name]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
   };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
@@ -70,6 +75,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
       ...prev,
       categoryId: event.target.value,
     }));
+    // Xóa lỗi cho categoryId khi chọn
     setErrors((prev) => ({ ...prev, categoryId: "" }));
   };
 
@@ -78,7 +84,11 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
       const updatedColors = prev.colorIds.includes(colorId)
         ? prev.colorIds.filter((id) => id !== colorId)
         : [...prev.colorIds, colorId];
-      setErrors((prevErrors) => ({ ...prevErrors, colorIds: "" }));
+
+      if (updatedColors.length > 0) {
+        setErrors((prevErrors) => ({ ...prevErrors, colorIds: "" }));
+      }
+
       return { ...prev, colorIds: updatedColors };
     });
   };
@@ -206,6 +216,10 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         >
           {renderedColors}
         </Box>
+        <Typography color="error" variant="caption">
+          {errors.colorIds}
+        </Typography>
+
         <TextField
           margin="dense"
           label="Price"

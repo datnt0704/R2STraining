@@ -7,7 +7,7 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { validateName } from "./../utils/validation"; // Import hàm validate
+import { validateName } from "./../utils/validation";
 
 interface ColorDialogProps {
   open: boolean;
@@ -27,7 +27,6 @@ const ColorDialog: React.FC<ColorDialogProps> = ({
     const value = e.target.value;
     setNewColor(value);
 
-    // Nếu có lỗi trước đó và người dùng đang nhập, xóa lỗi
     if (error) {
       const validationError = validateName(value, "color");
       if (!validationError) {
@@ -39,7 +38,7 @@ const ColorDialog: React.FC<ColorDialogProps> = ({
   const handleAddColor = () => {
     const validationError = validateName(newColor, "color");
     if (validationError) {
-      setError(validationError); // Hiển thị lỗi nếu có
+      setError(validationError);
       return;
     }
 

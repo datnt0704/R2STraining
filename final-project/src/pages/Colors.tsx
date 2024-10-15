@@ -70,7 +70,7 @@ const Colors: React.FC = () => {
   const handleDeleteColor = useCallback(
     (id: string) => {
       const count = Object.values(products).filter((product: any) => {
-        return String(product.colorIds) === String(id);
+        return product.colorIds.includes(Number(id));
       }).length;
 
       setProductCount(count);

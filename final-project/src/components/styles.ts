@@ -12,9 +12,9 @@ export const drawerStyle = {
   };
 
 export const ellipsisStyle = {
-  maxWidth: "150px", // Giới hạn chiều rộng của ô
-  whiteSpace: "nowrap", // Không cho phép xuống dòng
-  overflow: "hidden", // Ẩn phần vượt quá
-  textOverflow: "ellipsis", // Hiển thị dấu '...'
-  cursor: "pointer", // Thêm con trỏ để hiển thị tooltip
+  maxWidth: "150px", 
+  whiteSpace: "nowrap",
+  overflow: "hidden", 
+  textOverflow: "ellipsis", 
+  cursor: "pointer", 
 };
