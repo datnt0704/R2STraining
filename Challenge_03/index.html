@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Challenge 3</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <form class="form" id="exampleForm">
+        <fieldset class="form-group">
+          <label for="username" class="label-username">Username</label>
+          <input
+            type="text"
+            id="username"
+            class="input-username"
+            placeholder="Enter username"
+          />
+        </fieldset>
+
+        <fieldset class="form-group">
+          <label for="password" class="label-password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="input-password"
+            placeholder="Enter password"
+          />
+          <small class="form-password-info">
+            Your password is between 4 and 12 characters
+          </small>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <label for="inputLabel" class="label-inputtext"
+            >Input Text Label</label
+          >
+          <input
+            type="text"
+            id="inputLabel"
+            class="input-inputtext error"
+            placeholder="Typing"
+          />
+          <div class="error-message">
+            Error message informing me of a problem
+          </div>
+        </fieldset>
+
+        <fieldset class="form-group form-remember">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            class="input-remember"
+            checked
+          />
+          <label for="rememberMe" class="label-remember">Remember me</label>
+        </fieldset>
+
+        <fieldset class="form-group form-toggle">
+          <label class="toggle" for="toggle">
+            <input type="checkbox" id="toggle" class="input-toggle" />
+            <div class="slider"></div>
+            <span>Off</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="form-group form-radio">
+          <div class="radio-container">
+            <input
+              type="radio"
+              name="radioGroup"
+              id="radio1"
+              class="input-radio"
+              checked
+            />
+            <label for="radio1" class="label-radio">Radio selection 1</label>
+          </div>
+          <div class="radio-container">
+            <input
+              type="radio"
+              name="radioGroup"
+              id="radio2"
+              class="input-radio"
+            />
+            <label for="radio2" class="label-radio">Radio selection 2</label>
+          </div>
+          <div class="radio-container">
+            <input
+              type="radio"
+              name="radioGroup"
+              id="radio3"
+              class="input-radio"
+            />
+            <label for="radio3" class="label-radio">Radio selection 3</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <label for="dropdown" class="label-dropdown">Dropdown Title</label>
+          <select id="dropdown" class="dropdown-select">
+            <option>Dropdown option</option>
+            <option>Dropdown option 1</option>
+            <option>Dropdown option 2</option>
+            <option>Dropdown option 3</option>
+            <option>Dropdown option 4</option>
+            <option>Dropdown option 5</option>
+            <option>Dropdown option 6</option>
+            <option>Dropdown option 7</option>
+            <option>Dropdown option 8</option>
+            <option>Dropdown option 9</option>
+            <option>Dropdown option 10</option>
+          </select>
+        </fieldset>
+
+        <fieldset class="form-buttons">
+          <button type="button" class="form-buttons-cancel">Cancel</button>
+          <button type="submit" class="form-buttons-next">Next</button>
+        </fieldset>
+      </form>
+    </div>
+  </body>
+</html>
